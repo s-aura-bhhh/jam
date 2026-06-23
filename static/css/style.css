@@ -1,0 +1,469 @@
+:root {
+  --color-bg: #f4f4f5;
+  --color-card-bg: #ffffff;
+  --color-text: #1f2937;
+  --color-text-muted: #6b7280;
+  --color-border: #e5e7eb;
+  --color-primary: #2563eb;
+  --color-primary-tint: #eff6ff;
+  --color-danger: #dc2626;
+  --color-success: #16a34a;
+}
+
+/* Ensure [hidden] always wins — author display values (e.g. flex) would
+   otherwise override the browser's default [hidden]{display:none} rule. */
+[hidden] { display: none !important; }
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.25rem;
+}
+
+.page-center {
+  justify-content: center;
+}
+
+.card {
+  background: var(--color-card-bg);
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.landing-card {
+  text-align: center;
+}
+
+h1, h2, h3 {
+  margin: 0 0 0.75rem;
+}
+
+h2 {
+  font-size: 1rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 1.5rem;
+}
+
+.title {
+  font-size: 1.5rem;
+}
+
+.subtitle {
+  color: var(--color-text-muted);
+  margin-bottom: 1.5rem;
+}
+
+/* ---------- forms ---------- */
+
+.stacked-form label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 600;
+  margin-bottom: 1rem;
+}
+
+.stacked-form input {
+  display: block;
+  width: 100%;
+  margin-top: 0.35rem;
+  padding: 0.65rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 1rem;
+  background: #fff;
+  color: var(--color-text);
+}
+
+.error-text {
+  color: var(--color-danger);
+  font-size: 0.875rem;
+  margin: 0.75rem 0 0;
+}
+
+/* ---------- buttons ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  border: none;
+  border-radius: 8px;
+  background: var(--color-border);
+  color: var(--color-text);
+  font-size: 0.95rem;
+  font-weight: 600;
+  padding: 0.6rem 1rem;
+  cursor: pointer;
+  text-decoration: none;
+}
+
+.btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-primary {
+  background: var(--color-primary);
+  color: #fff;
+}
+
+.btn-secondary {
+  background: #fff;
+  color: var(--color-primary);
+  border: 1px solid var(--color-primary);
+}
+
+.btn-danger {
+  background: var(--color-danger);
+  color: #fff;
+}
+
+.btn-success {
+  background: var(--color-success);
+  color: #fff;
+}
+
+.btn-large {
+  display: flex;
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 1.05rem;
+}
+
+.btn-small {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+}
+
+.btn-round {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-radius: 50%;
+  padding: 0;
+  font-size: 1.4rem;
+  line-height: 1;
+}
+
+.button-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 1.5rem;
+}
+
+/* ---------- room header / timer ---------- */
+
+.room-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.room-code-block {
+  display: flex;
+  flex-direction: column;
+}
+
+.label {
+  font-size: 0.7rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+.room-code {
+  font-size: 1.4rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer {
+  font-size: 2.25rem;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+.room-header-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.status-line {
+  text-align: center;
+  color: var(--color-text-muted);
+  min-height: 1.3em;
+  margin: 0.5rem 0 1rem;
+}
+
+.primary-actions {
+  margin-bottom: 1rem;
+}
+
+.speaker-banner {
+  text-align: center;
+  font-weight: 600;
+  color: var(--color-primary);
+  min-height: 1.3em;
+  margin-bottom: 0.75rem;
+}
+
+/* ---------- player list ---------- */
+
+.player-list {
+  list-style: none;
+  margin: 0.75rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.player-list li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--color-bg);
+  border: 2px solid transparent;
+  border-radius: 10px;
+}
+
+.player-list.clickable li {
+  cursor: pointer;
+}
+
+.player-list li.is-speaker {
+  border-color: var(--color-primary);
+  background: var(--color-primary-tint);
+}
+
+.player-name {
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.speaker-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-primary);
+  letter-spacing: 0.04em;
+}
+
+.player-score {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- modals ---------- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(17, 24, 39, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  z-index: 100;
+}
+
+.modal {
+  position: relative;
+  background: #fff;
+  border-radius: 14px;
+  padding: 1.5rem;
+  width: 100%;
+  max-width: 380px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+.modal-close {
+  position: absolute;
+  top: 0.6rem;
+  right: 0.75rem;
+  background: none;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  color: var(--color-text-muted);
+  cursor: pointer;
+}
+
+.score-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1.25rem;
+  margin: 1rem 0;
+}
+
+.score-display {
+  font-size: 1.75rem;
+  font-weight: 700;
+  min-width: 3rem;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.decision-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+.decision-actions .btn {
+  flex: 1;
+}
+
+.letter-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Changed from 4 columns to 2 */
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.letter-grid button {
+  /* Removed aspect-ratio: 1 */
+  padding: 0.75rem 0.5rem; /* Added padding to make them standard rectangular buttons */
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  background: var(--color-bg);
+  font-size: 0.95rem; /* Reduced font size slightly so long words fit */
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.letter-other-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.letter-other-row input {
+  flex: 1;
+  padding: 0.6rem 0.75rem;
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  font-size: 0.95rem;
+}
+
+/* ---------- buzzer ---------- */
+
+.buzz-btn {
+  display: block;
+  width: 100%;
+  min-height: 140px;
+  border: none;
+  border-radius: 18px;
+  background: var(--color-danger);
+  color: #fff;
+  font-size: 2rem;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  margin: 0.5rem 0 1rem;
+}
+
+.buzz-btn:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.buzz-btn:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* ---------- results table ---------- */
+
+.results-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 1.25rem;
+}
+
+.results-table th,
+.results-table td {
+  padding: 0.5rem 0.25rem;
+  border-bottom: 1px solid var(--color-border);
+  text-align: left;
+}
+
+.results-table th {
+  font-weight: 600;
+  color: var(--color-text-muted);
+}
+
+.results-table td {
+  text-align: right;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ---------- accessibility ---------- */
+
+:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+@media (max-width: 360px) {
+  .timer {
+    font-size: 1.8rem;
+  }
+  .buzz-btn {
+    font-size: 1.6rem;
+    min-height: 120px;
+  }
+}
+/* ---------- player self-highlight ---------- */
+
+.player-list li.is-me {
+  font-style: italic;
+}
+
+.me-tag {
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--color-text-muted);
+  letter-spacing: 0.04em;
+}

@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>JAM Buzzer</title>
+
+  <meta name="theme-color" content="#1f2937">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" href="/static/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
+  <link rel="stylesheet" href="/static/css/style.css">
+</head>
+<body>
+
+  <main class="page page-center">
+    <div class="card landing-card">
+      <h1 class="title">JAM Buzzer</h1>
+      <p class="subtitle">Run a Just A Minute session and let the buzzer decide.</p>
+
+      <div class="button-stack">
+        <a class="btn btn-primary btn-large" href="/host">Host a game</a>
+        <a class="btn btn-secondary btn-large" href="/play">Join a game</a>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    if ("serviceWorker" in navigator) {
+      window.addEventListener("load", () => {
+        navigator.serviceWorker.register("/service-worker.js");
+      });
+    }
+  </script>
+</body>
+</html>
