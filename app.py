@@ -95,6 +95,7 @@ def timer_loop(room_code):
         if room.status == STATUS_RUNNING:
             just_ended = game_manager.check_expiry(room_code)
             if just_ended:
+                _broadcast_state(room_code)
                 _broadcast_game_ended(room_code)
                 break
             socketio.emit(
