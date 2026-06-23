@@ -311,7 +311,5 @@ def on_buzz(_data=None):
 
 
 if __name__ == "__main__":
-    # Get the port from Render's environment, or fall back to 5000 for local testing
     port = int(os.environ.get("PORT", 5000))
-    # Removed debug=True for production safety
-    socketio.run(app, host="0.0.0.0", port=port)
+    socketio.run(app, host="0.0.0.0", port=port, allow_unsafe_werkzeug=True)
