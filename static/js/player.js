@@ -202,7 +202,9 @@
       return;
     }
 
-    showOnly(viewGame);
+    if (!(state.status === "ended" && !viewResults.hidden)) {
+      showOnly(viewGame);
+    }
     gameNumberDisplay.textContent = "Game " + state.game_number;
     gameTimer.textContent = fmtTime(state.remaining);
     gameStatusLine.textContent = statusMessage(state);
