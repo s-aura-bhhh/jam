@@ -69,11 +69,8 @@
 
   function statusMessage(state) {
     switch (state.status) {
-      case "lobby": return `Waiting to start - ${state.players.length} player(s) joined.`;
-      case "running": return "Round in progress.";
-      case "awaiting_decision": return "Waiting for your decision...";
-      case "awaiting_letter": return "Pick the reason for the jam.";
-      case "paused": return "Round paused - adjust speaker/points, then resume.";
+      case "lobby": return `Waiting to start...`;
+      case "paused": return "Round paused.";
       case "ended": return "Game ended.";
       default: return "";
     }
