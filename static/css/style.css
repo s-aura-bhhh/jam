@@ -20,6 +20,10 @@
 
 body {
   margin: 0;
+  background-color: var(--color-bg);
+  background-image: url("/static/bgi.jpg");
+  background-size: cover;
+  background-attachment: fixed;
   background: var(--color-bg);
   color: var(--color-text);
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
@@ -361,6 +365,7 @@ h2 {
   border: 1px solid var(--color-border);
   border-radius: 8px;
   background: var(--color-bg);
+  color: var(--color-text);
   font-size: 0.95rem; /* Reduced font size slightly so long words fit */
   font-weight: 700;
   cursor: pointer;
