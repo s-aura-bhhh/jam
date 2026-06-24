@@ -1,13 +1,13 @@
 :root {
-  --color-bg: #f4f4f5;
-  --color-card-bg: #ffffff;
-  --color-text: #1f2937;
-  --color-text-muted: #6b7280;
-  --color-border: #e5e7eb;
-  --color-primary: #2563eb;
-  --color-primary-tint: #eff6ff;
-  --color-danger: #dc2626;
-  --color-success: #16a34a;
+  --color-bg: #111827;            /* Deep dark gray/blue for the page background */
+  --color-card-bg: #1f2937;       /* Slightly lighter for cards and modals */
+  --color-text: #f9fafb;          /* Crisp off-white text */
+  --color-text-muted: #9ca3af;    /* Soft gray for secondary text */
+  --color-border: #374151;        /* Subtle dark borders */
+  --color-primary: #3b82f6;       /* Bright, highly visible blue */
+  --color-primary-tint: rgba(59, 130, 246, 0.15); /* Transparent blue for active speakers */
+  --color-danger: #ef4444;        /* Punchy red for the buzzer and warnings */
+  --color-success: #22c55e;       /* Bright green for correct jams */
 }
 
 /* Ensure [hidden] always wins — author display values (e.g. flex) would
@@ -90,7 +90,7 @@ h2 {
   border: 1px solid var(--color-border);
   border-radius: 8px;
   font-size: 1rem;
-  background: #fff;
+  background: var(--color-bg);
   color: var(--color-text);
 }
 
@@ -129,7 +129,7 @@ h2 {
 }
 
 .btn-secondary {
-  background: #fff;
+  background: transparent;
   color: var(--color-primary);
   border: 1px solid var(--color-primary);
 }
@@ -301,7 +301,7 @@ h2 {
 
 .modal {
   position: relative;
-  background: #fff;
+  background: var(--color-card-bg);
   border-radius: 14px;
   padding: 1.5rem;
   width: 100%;
@@ -377,6 +377,8 @@ h2 {
   border: 1px solid var(--color-border);
   border-radius: 8px;
   font-size: 0.95rem;
+  background: var(--color-bg);
+  color: var(--color-text);
 }
 
 /* ---------- buzzer ---------- */
