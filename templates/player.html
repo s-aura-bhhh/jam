@@ -2,89 +2,79 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Join - JAM Buzzer</title>
-
-  <meta name="theme-color" content="#1f2937">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Join | JAM</title>
   <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="/static/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
-  <main class="page">
+  <main class="container">
 
-    <section id="view-join" class="card">
-      <h1 class="title">Join a JAM session</h1>
+    <div id="view-join" class="box">
+      <h1>Join a JAM session</h1>
 
-      <form id="join-form" class="stacked-form">
-        <label>
-          Room code
-          <input type="text" id="join-room-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required>
-        </label>
-        <label>
-          Your name
-          <input type="text" id="join-name" maxlength="30" required>
-        </label>
-        <button type="submit" class="btn btn-primary btn-large">Join</button>
+      <form id="join-form" class="form-col">
+        <label>Room code <input type="text" id="join-room-code" inputmode="numeric" pattern="[0-9]*" maxlength="6" required></label>
+        <label>Your name <input type="text" id="join-name" maxlength="30" required></label>
+        <button type="submit" class="btn primary huge">Join</button>
       </form>
 
-      <p id="join-error" class="error-text" hidden></p>
-    </section>
+      <p id="join-error" class="err-msg" hidden></p>
+    </div>
 
-    <section id="view-waiting" class="card" hidden>
-      <h1 class="title">Room <span id="waiting-room-code"></span></h1>
-      <p>Waiting for the host to start the game...</p>
+    <div id="view-waiting" class="box" hidden>
+      <h1>Room <span id="waiting-room-code"></span></h1>
+      <p>Waiting for host...</p>
 
       <h2>Players</h2>
-      <ul id="waiting-player-list" class="player-list"></ul>
-    </section>
+      <ul id="waiting-player-list" class="players"></ul>
+    </div>
 
-    <section id="view-game" class="card" hidden>
-      <div style="display: flex; justify-content: space-between; align-items: baseline; border-bottom: 1px solid var(--color-border); margin-bottom: 1rem; padding-bottom: 0.5rem;">
-        <span class="label" style="margin: 0;">Timer</span>
-        <span id="game-number-display" class="speaker-tag" style="color: var(--color-primary); border: 1px solid var(--color-primary); padding: 2px 6px; border-radius: 4px;">Game 1</span>
+    <div id="view-game" class="box" hidden>
+      <div class="top-bar">
+        <span>Timer</span>
+        <span id="game-number-display" class="badge">Game 1</span>
       </div>
-      <div id="game-timer" class="timer">--.--</div>
-      <div id="speaker-banner" class="speaker-banner"></div>
+      <div id="game-timer" class="clock">--.--</div>
+      <div id="speaker-banner" class="banner"></div>
 
       <button id="buzz-btn" class="buzz-btn">BUZZ</button>
-      <p id="game-status-line" class="status-line"></p>
+      <p id="game-status-line" class="status"></p>
 
       <h2>Scoreboard</h2>
-      <ul id="game-player-list" class="player-list"></ul>
-    </section>
+      <ul id="game-player-list" class="players"></ul>
+    </div>
 
-    <section id="view-results" class="card" hidden>
-      <h1 class="title">Your performance</h1>
-      <p style="color: var(--color-text-muted); font-size: 0.85rem; margin-top: -1rem; margin-bottom: 1rem;">(For the match that just ended)</p>
+    <div id="view-results" class="box" hidden>
+      <h1>Your performance</h1>
+      <p class="sub-text">(Just ended)</p>
 
-      <table class="results-table">
+      <table class="results">
         <tr><th>Final score</th><td id="result-score"></td></tr>
         <tr><th>Time spoken (s)</th><td id="result-time"></td></tr>
         <tr><th>Correct jams</th><td id="result-correct"></td></tr>
         <tr><th>Wrong jams</th><td id="result-wrong"></td></tr>
       </table>
 
-      <h2>Mistakes breakdown</h2>
-      <table class="results-table" id="result-letters"></table>
-    </section>
+      <h2>Mistakes</h2>
+      <table class="results" id="result-letters"></table>
+    </div>
   </main>
 
-  <div id="ended-dialog" class="modal-overlay" hidden>
+  <div id="ended-dialog" class="backdrop" hidden>
     <div class="modal">
       <h3 id="ended-winner-text"></h3>
-      <button id="ended-close-btn" class="btn btn-large">Close</button>
+      <button id="ended-close-btn" class="btn huge">Close</button>
     </div>
   </div>
 
-  <div id="disbanded-dialog" class="modal-overlay" hidden>
+  <div id="disbanded-dialog" class="backdrop" hidden>
     <div class="modal">
-      <h3 style="color: var(--color-danger); margin-top:0;">Room Closed</h3>
-      <p style="font-size: 0.9rem;">The host has disbanded this session. Here is your overall cumulative performance:</p>
+      <h3 class="red-title">Room Closed</h3>
+      <p>The host disbanded this session. Cumulative stats:</p>
       
-      <table class="results-table" style="margin-top: 1rem;">
+      <table class="results mt-2">
         <tr><th>Games Played</th><td id="overall-games"></td></tr>
         <tr><th>Games Won</th><td id="overall-won"></td></tr>
         <tr><th>Total Score</th><td id="overall-score"></td></tr>
@@ -93,20 +83,16 @@
         <tr><th>Wrong Jams</th><td id="overall-wrong"></td></tr>
       </table>
 
-      <h4 style="margin: 1.25rem 0 0.5rem;">Overall Mistakes</h4>
-      <table class="results-table" id="overall-letters"></table>
+      <h4 class="mt-2">Overall Mistakes</h4>
+      <table class="results" id="overall-letters"></table>
       
-      <a href="/" class="btn btn-large btn-primary" style="margin-top: 1.5rem;">Back to home</a>
+      <a href="/" class="btn primary huge mt-2">Back to home</a>
     </div>
   </div>
 
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js");
-      });
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');
   </script>
   <script src="/static/js/player.js"></script>
 </body>
