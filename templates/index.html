@@ -2,35 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Just A Minute!</title>
-
-  <meta name="theme-color" content="#1f2937">
   <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="/static/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
-  <main class="page page-center">
-    <div class="card landing-card">
-      <h1 class="title">Just A Minute!</h1>
-      <p class="subtitle">Choose to HOST or JOIN a room</p>
+  <main class="container center-wrap">
+    <div class="box text-center">
+      <h1>Just A Minute!</h1>
+      <p style="margin-bottom: 1.5rem; color: #666;">Choose to HOST or JOIN a room</p>
 
-      <div class="button-stack">
-        <a class="btn btn-primary btn-large" href="/host">Host a game</a>
-        <a class="btn btn-secondary btn-large" href="/play">Join a game</a>
+      <div class="flex-col">
+        <a href="/host" class="btn primary huge">Host a game</a>
+        <a href="/play" class="btn secondary huge">Join a game</a>
       </div>
     </div>
   </main>
 
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js");
-      });
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');
   </script>
 </body>
 </html>
