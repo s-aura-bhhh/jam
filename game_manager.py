@@ -3,9 +3,8 @@ import time
 import uuid
 from threading import Lock
 
-LETTERS = ["Repetition", "Deviation", "SpeechDefect", "Grammar", "Gesticulation", "Qualification", "Pause", "LateStart"]
+FAULTS = ["Repetition", "Deviation", "SpeechDefect", "Grammar", "Gesticulation", "Qualification", "Pause", "LateStart"]
 
-# Room lifecycle states
 STATUS_LOBBY = "lobby"
 STATUS_RUNNING = "running"
 STATUS_AWAITING_DECISION = "awaiting_decision"
@@ -13,48 +12,44 @@ STATUS_AWAITING_LETTER = "awaiting_letter"
 STATUS_PAUSED = "paused"
 STATUS_ENDED = "ended"
 
-
 class GameError(Exception):
     pass
 
-
 class Player:
-    def __init__(self, player_id, name, sid=None):
-        self.id = player_id
+    def __init__(self, pid, name, sid=None):
+        self.id = pid
         self.name = name
         self.sid = sid
 
-        # Current game stats
         self.points = 0
         self.correct_jams = 0
         self.wrong_jams = 0
         self.time_spoken = 0.0
-        self.letter_tally = {letter: 0 for letter in LETTERS}
+        self.letter_tally = {f: 0 for f in FAULTS}
         self.others = []
         
-        # Cumulative/Overall stats across multiple games in the room
         self.games_played = 0
-        self.games_won = 0  # <--- NEW TRACKER
+        self.games_won = 0
         self.total_points = 0
         self.total_time_spoken = 0.0
         self.total_correct_jams = 0
         self.total_wrong_jams = 0
-        self.total_letter_tally = {letter: 0 for letter in LETTERS}
+        self.total_letter_tally = {f: 0 for f in FAULTS}
         self.total_others = []
 
         self.joined_at = time.time()
 
     def reset_stats(self):
-        """Clears stats for the *current* game only."""
+        # wipe current
         self.points = 0
         self.correct_jams = 0
         self.wrong_jams = 0
         self.time_spoken = 0.0
-        self.letter_tally = {letter: 0 for letter in LETTERS}
+        self.letter_tally = {f: 0 for f in FAULTS}
         self.others = []
         
     def roll_into_cumulative(self):
-        """Archives current game stats into the cumulative totals."""
+        # archive
         self.games_played += 1
         self.total_points += self.points
         self.total_time_spoken += self.time_spoken
@@ -85,21 +80,21 @@ class Player:
             "total_others": list(self.total_others),
         }
 
-    def restore(self, snapshot):
-        self.points = snapshot["points"]
-        self.time_spoken = snapshot["time_spoken"]
-        self.correct_jams = snapshot["correct_jams"]
-        self.wrong_jams = snapshot["wrong_jams"]
-        self.letter_tally = dict(snapshot["letter_tally"])
-        self.others = list(snapshot["others"])
-        self.games_played = snapshot.get("games_played", 0)
-        self.games_won = snapshot.get("games_won", 0)
-        self.total_points = snapshot.get("total_points", 0)
-        self.total_time_spoken = snapshot.get("total_time_spoken", 0.0)
-        self.total_correct_jams = snapshot.get("total_correct_jams", 0)
-        self.total_wrong_jams = snapshot.get("total_wrong_jams", 0)
-        self.total_letter_tally = dict(snapshot.get("total_letter_tally", {l: 0 for l in LETTERS}))
-        self.total_others = list(snapshot.get("total_others", []))
+    def restore(self, snap):
+        self.points = snap["points"]
+        self.time_spoken = snap["time_spoken"]
+        self.correct_jams = snap["correct_jams"]
+        self.wrong_jams = snap["wrong_jams"]
+        self.letter_tally = dict(snap["letter_tally"])
+        self.others = list(snap["others"])
+        self.games_played = snap.get("games_played", 0)
+        self.games_won = snap.get("games_won", 0)
+        self.total_points = snap.get("total_points", 0)
+        self.total_time_spoken = snap.get("total_time_spoken", 0.0)
+        self.total_correct_jams = snap.get("total_correct_jams", 0)
+        self.total_wrong_jams = snap.get("total_wrong_jams", 0)
+        self.total_letter_tally = dict(snap.get("total_letter_tally", {f: 0 for f in FAULTS}))
+        self.total_others = list(snap.get("total_others", []))
 
     def to_dict(self, speaker_id=None, live_extra=0.0):
         return {
@@ -123,10 +118,9 @@ class Player:
         }
 
     def to_cumulative_dict(self, include_current=True):
-        """Returns the overall room lifetime stats for the player."""
         games = self.games_played + (1 if include_current else 0)
         pts = self.total_points + (self.points if include_current else 0)
-        t_spoken = self.total_time_spoken + (self.time_spoken if include_current else 0)
+        t_spk = self.total_time_spoken + (self.time_spoken if include_current else 0)
         c_jams = self.total_correct_jams + (self.correct_jams if include_current else 0)
         w_jams = self.total_wrong_jams + (self.wrong_jams if include_current else 0)
         
@@ -143,8 +137,8 @@ class Player:
             "name": self.name,
             "games_played": games,
             "games_won": self.games_won,
-            "score": round(pts + t_spoken, 2),
-            "time_spoken": round(t_spoken, 2),
+            "score": round(pts + t_spk, 2),
+            "time_spoken": round(t_spk, 2),
             "correct_jams": c_jams,
             "wrong_jams": w_jams,
             "letter_tally": tally,
@@ -152,18 +146,17 @@ class Player:
             "others": others,
         }
 
-
 class Room:
-    def __init__(self, code, host_sid, wrong_points, correct_points, timer_seconds):
+    def __init__(self, code, host_sid, wrong_pts, correct_pts, duration):
         self.code = code
         self.host_sid = host_sid
         self.game_number = 1
 
-        self.wrong_points = wrong_points
-        self.correct_points = correct_points
-        self.timer_total = float(timer_seconds)
+        self.wrong_points = wrong_pts
+        self.correct_points = correct_pts
+        self.timer_total = float(duration)
 
-        self.remaining = float(timer_seconds)
+        self.remaining = float(duration)
         self.running = False
         self.running_since = None
 
@@ -180,15 +173,13 @@ class Room:
         self.lock = Lock()
 
     def get_remaining(self):
-        if self.running and self.running_since is not None:
-            elapsed = time.time() - self.running_since
-            return max(0.0, self.remaining - elapsed)
+        if self.running and self.running_since:
+            return max(0.0, self.remaining - (time.time() - self.running_since))
         return max(0.0, self.remaining)
 
     def _pause(self):
-        if self.running and self.running_since is not None:
-            elapsed = time.time() - self.running_since
-            elapsed = max(0.0, elapsed)
+        if self.running and self.running_since:
+            elapsed = max(0.0, time.time() - self.running_since)
             self.remaining = max(0.0, self.remaining - elapsed)
             self.running = False
             self.running_since = None
@@ -201,13 +192,13 @@ class Room:
 
     def player_list(self):
         live_extra = 0.0
-        live_player_id = None
-        if self.running and self.running_since is not None:
-            live_player_id = self.speaker_id
+        live_pid = None
+        if self.running and self.running_since:
+            live_pid = self.speaker_id
             live_extra = time.time() - self.running_since
 
         return [
-            p.to_dict(self.speaker_id, live_extra if p.id == live_player_id else 0.0)
+            p.to_dict(self.speaker_id, live_extra if p.id == live_pid else 0.0)
             for p in self.players.values()
         ]
 
@@ -227,268 +218,258 @@ class Room:
             "awaiting_letter": self.awaiting_letter,
         }
 
-
 class GameManager:
     def __init__(self):
         self.rooms = {}
-        self._rooms_lock = Lock()
+        self._mutex = Lock()
 
-    def _generate_code(self):
-        with self._rooms_lock:
+    def _gen_code(self):
+        with self._mutex:
             for _ in range(1000):
                 code = str(random.randint(100000, 999999))
                 if code not in self.rooms:
                     return code
-            raise GameError("Could not allocate a room code, try again.")
+            raise GameError("Room creation failed.")
 
     def create_room(self, host_sid, wrong_points, correct_points, timer_seconds):
-        if timer_seconds is None or timer_seconds <= 0:
-            raise GameError("Timer must be a positive number of seconds.")
+        if not timer_seconds or timer_seconds <= 0:
+            raise GameError("Invalid timer.")
 
-        code = self._generate_code()
-        room = Room(code, host_sid, wrong_points, correct_points, timer_seconds)
-        with self._rooms_lock:
-            self.rooms[code] = room
-        return room
+        code = self._gen_code()
+        rm = Room(code, host_sid, wrong_points, correct_points, timer_seconds)
+        with self._mutex:
+            self.rooms[code] = rm
+        return rm
 
     def get_room(self, code):
-        room = self.rooms.get(str(code))
-        if room is None:
+        rm = self.rooms.get(str(code))
+        if not rm:
             raise GameError("Room not found.")
-        return room
+        return rm
 
     def remove_room(self, code):
-        with self._rooms_lock:
+        with self._mutex:
             self.rooms.pop(str(code), None)
 
     def join_room(self, code, name, sid=None):
-        room = self.get_room(code)
+        rm = self.get_room(code)
         name = (name or "").strip()
         if not name:
-            raise GameError("Name cannot be empty.")
+            raise GameError("Name required.")
 
-        with room.lock:
-            active_names = {p.name for p in room.players.values()}
-            is_rejoin = name in room.departed
+        with rm.lock:
+            active = {p.name for p in rm.players.values()}
+            rejoin = name in rm.departed
 
-            if room.status != STATUS_LOBBY and not is_rejoin:
-                raise GameError("This game has already started.")
+            if rm.status != STATUS_LOBBY and not rejoin:
+                raise GameError("Game in progress.")
 
-            if name in active_names:
-                raise GameError("That name is already taken in this room.")
+            if name in active:
+                raise GameError("Name taken.")
 
-            player = Player(str(uuid.uuid4())[:8], name, sid=sid)
-            if is_rejoin:
-                player.restore(room.departed.pop(name))
+            p = Player(str(uuid.uuid4())[:8], name, sid=sid)
+            if rejoin:
+                p.restore(rm.departed.pop(name))
 
-            room.players[player.id] = player
+            rm.players[p.id] = p
 
-            if room.speaker_id is None:
-                room.speaker_id = player.id
+            if not rm.speaker_id:
+                rm.speaker_id = p.id
 
-            return player
+            return p
 
-    def leave_room(self, code, player_id):
-        room = self.get_room(code)
-        with room.lock:
-            player = room.players.get(player_id)
-            if player is None:
-                return room
+    def leave_room(self, code, pid):
+        rm = self.get_room(code)
+        with rm.lock:
+            p = rm.players.get(pid)
+            if not p:
+                return rm
 
-            was_speaker = (room.speaker_id == player_id)
+            was_speaker = (rm.speaker_id == pid)
 
-            if was_speaker and room.running:
-                elapsed = room._pause()
-                player.time_spoken += elapsed
+            if was_speaker and rm.running:
+                p.time_spoken += rm._pause()
 
-            room.departed[player.name] = player.snapshot()
-            del room.players[player_id]
+            rm.departed[p.name] = p.snapshot()
+            del rm.players[pid]
 
-            needs_pause = False
+            pause_needed = False
 
-            if room.pending_buzz == player_id:
-                room.pending_buzz = None
-                room.pending_speaker = None
-                needs_pause = True
+            if rm.pending_buzz == pid:
+                rm.pending_buzz = rm.pending_speaker = None
+                pause_needed = True
 
-            if room.awaiting_letter == player_id:
-                room.awaiting_letter = None
-                needs_pause = True
+            if rm.awaiting_letter == pid:
+                rm.awaiting_letter = None
+                pause_needed = True
 
             if was_speaker:
-                room.speaker_id = next(iter(room.players), None)
-                needs_pause = True
+                rm.speaker_id = next(iter(rm.players), None)
+                pause_needed = True
 
-            if needs_pause and room.status in (STATUS_RUNNING, STATUS_AWAITING_DECISION, STATUS_AWAITING_LETTER):
-                if room.running:
-                    room._pause()
-                room.status = STATUS_PAUSED
+            if pause_needed and rm.status in (STATUS_RUNNING, STATUS_AWAITING_DECISION, STATUS_AWAITING_LETTER):
+                if rm.running:
+                    rm._pause()
+                rm.status = STATUS_PAUSED
 
-            return room
+            return rm
 
-    def update_score(self, code, player_id, delta):
-        room = self.get_room(code)
-        with room.lock:
-            player = room.players.get(player_id)
-            if player is None:
-                raise GameError("Player not found.")
-            player.points += delta
-            return room
+    def update_score(self, code, pid, delta):
+        rm = self.get_room(code)
+        with rm.lock:
+            p = rm.players.get(pid)
+            if not p:
+                raise GameError("Player missing.")
+            p.points += delta
+            return rm
 
-    def set_speaker(self, code, player_id):
-        room = self.get_room(code)
-        with room.lock:
-            if player_id not in room.players:
-                raise GameError("Player not found.")
-            room.speaker_id = player_id
-            return room
+    def set_speaker(self, code, pid):
+        rm = self.get_room(code)
+        with rm.lock:
+            if pid not in rm.players:
+                raise GameError("Player missing.")
+            rm.speaker_id = pid
+            return rm
 
     def start_game(self, code):
-        room = self.get_room(code)
-        with room.lock:
-            if room.status != STATUS_LOBBY:
-                raise GameError("Game already started.")
-            if not room.players:
-                raise GameError("Need at least one player to start.")
-            if room.speaker_id is None:
-                room.speaker_id = next(iter(room.players))
+        rm = self.get_room(code)
+        with rm.lock:
+            if rm.status != STATUS_LOBBY:
+                raise GameError("Already started.")
+            if not rm.players:
+                raise GameError("Need players.")
+            
+            rm.speaker_id = rm.speaker_id or next(iter(rm.players))
+            rm.remaining = rm.timer_total
+            rm.status = STATUS_RUNNING
+            rm._resume()
+            return rm
 
-            room.remaining = room.timer_total
-            room.status = STATUS_RUNNING
-            room._resume()
-            return room
+    def handle_buzz(self, code, pid):
+        rm = self.get_room(code)
+        with rm.lock:
+            if rm.status != STATUS_RUNNING:
+                raise GameError("No active round.")
+            if pid not in rm.players:
+                raise GameError("Player missing.")
+            if pid == rm.speaker_id:
+                raise GameError("Can't self-buzz.")
 
-    def handle_buzz(self, code, player_id):
-        room = self.get_room(code)
-        with room.lock:
-            if room.status != STATUS_RUNNING:
-                raise GameError("No active round to buzz on right now.")
-            if player_id not in room.players:
-                raise GameError("Player not found.")
-            if player_id == room.speaker_id:
-                raise GameError("The current speaker can't buzz on themselves.")
+            elapsed = rm._pause()
+            if rm.speaker_id:
+                rm.players[rm.speaker_id].time_spoken += elapsed
 
-            elapsed = room._pause()
-            if room.speaker_id is not None:
-                room.players[room.speaker_id].time_spoken += elapsed
-
-            room.pending_buzz = player_id
-            room.pending_speaker = room.speaker_id
-            room.status = STATUS_AWAITING_DECISION
-            return room, elapsed
+            rm.pending_buzz = pid
+            rm.pending_speaker = rm.speaker_id
+            rm.status = STATUS_AWAITING_DECISION
+            return rm, elapsed
 
     def resolve_decision(self, code, is_correct):
-        room = self.get_room(code)
-        with room.lock:
-            if room.status != STATUS_AWAITING_DECISION or room.pending_buzz is None:
-                raise GameError("No buzz is currently awaiting a decision.")
+        rm = self.get_room(code)
+        with rm.lock:
+            if rm.status != STATUS_AWAITING_DECISION or not rm.pending_buzz:
+                raise GameError("No pending buzz.")
 
-            buzzer = room.players[room.pending_buzz]
+            buzzer = rm.players[rm.pending_buzz]
 
             if is_correct:
-                buzzer.points += room.correct_points
+                buzzer.points += rm.correct_points
                 buzzer.correct_jams += 1
                 
-                target_for_letter = room.pending_speaker if room.pending_speaker else buzzer.id
-                
-                room.speaker_id = buzzer.id
-                room.awaiting_letter = target_for_letter
-                room.pending_buzz = None
-                room.pending_speaker = None
-                room.status = STATUS_AWAITING_LETTER
+                rm.awaiting_letter = rm.pending_speaker or buzzer.id
+                rm.speaker_id = buzzer.id
+                rm.pending_buzz = rm.pending_speaker = None
+                rm.status = STATUS_AWAITING_LETTER
             else:
-                buzzer.points += room.wrong_points
+                buzzer.points += rm.wrong_points
                 buzzer.wrong_jams += 1
-                room.pending_buzz = None
-                room.pending_speaker = None
-                room.status = STATUS_PAUSED
+                rm.pending_buzz = rm.pending_speaker = None
+                rm.status = STATUS_PAUSED
 
-            return room
+            return rm
 
     def select_letter(self, code, letter=None, custom_text=None):
-        room = self.get_room(code)
-        with room.lock:
-            if room.status != STATUS_AWAITING_LETTER or room.awaiting_letter is None:
-                raise GameError("No letter selection is pending.")
+        rm = self.get_room(code)
+        with rm.lock:
+            if rm.status != STATUS_AWAITING_LETTER or not rm.awaiting_letter:
+                raise GameError("No letter pending.")
 
-            target = room.players[room.awaiting_letter]
-            if letter is not None:
-                if letter not in LETTERS:
-                    raise GameError("Invalid letter option.")
+            target = rm.players[rm.awaiting_letter]
+            if letter:
+                if letter not in FAULTS:
+                    raise GameError("Invalid letter.")
                 target.letter_tally[letter] += 1
             else:
                 text = (custom_text or "").strip()
                 if not text:
-                    raise GameError("Custom text cannot be empty.")
+                    raise GameError("Text required.")
                 target.others.append(text)
 
-            room.awaiting_letter = None
-            room.status = STATUS_PAUSED
-            return room
+            rm.awaiting_letter = None
+            rm.status = STATUS_PAUSED
+            return rm
 
     def resume_round(self, code):
-        room = self.get_room(code)
-        with room.lock:
-            if room.status != STATUS_PAUSED:
-                raise GameError("Round isn't paused, nothing to resume.")
-            room.status = STATUS_RUNNING
-            room._resume()
-            return room
+        rm = self.get_room(code)
+        with rm.lock:
+            if rm.status != STATUS_PAUSED:
+                raise GameError("Not paused.")
+            rm.status = STATUS_RUNNING
+            rm._resume()
+            return rm
 
     def reset_timer(self, code):
-        room = self.get_room(code)
-        with room.lock:
-            if room.running:
-                raise GameError("Pause the round before resetting the timer.")
+        rm = self.get_room(code)
+        with rm.lock:
+            if rm.running:
+                raise GameError("Pause first.")
             
-            for player in room.players.values():
-                player.reset_stats()
+            for p in rm.players.values():
+                p.reset_stats()
             
-            room.remaining = room.timer_total
-            return room
+            rm.remaining = rm.timer_total
+            return rm
 
     def check_expiry(self, code):
-        room = self.get_room(code)
-        with room.lock:
-            if room.status == STATUS_RUNNING and room.get_remaining() <= 0:
-                elapsed = room._pause()
-                if room.speaker_id is not None:
-                    room.players[room.speaker_id].time_spoken += elapsed
-                room.status = STATUS_ENDED
+        rm = self.get_room(code)
+        with rm.lock:
+            if rm.status == STATUS_RUNNING and rm.get_remaining() <= 0:
+                elapsed = rm._pause()
+                if rm.speaker_id:
+                    rm.players[rm.speaker_id].time_spoken += elapsed
+                rm.status = STATUS_ENDED
                 
-                # Check for the winner(s) and increment their games_won tracker
-                if room.players:
-                    max_score = max(p.compute_score() for p in room.players.values())
-                    for p in room.players.values():
-                        if p.compute_score() == max_score:
+                # win check
+                if rm.players:
+                    top_score = max(p.compute_score() for p in rm.players.values())
+                    for p in rm.players.values():
+                        if p.compute_score() == top_score:
                             p.games_won += 1
                             
                 return True
             return False
 
     def get_winner(self, code):
-        room = self.get_room(code)
-        if not room.players:
+        rm = self.get_room(code)
+        if not rm.players:
             return None
-        return max(room.players.values(), key=lambda p: p.compute_score())
+        return max(rm.players.values(), key=lambda p: p.compute_score())
 
     def restart_game(self, code):
-        room = self.get_room(code)
-        with room.lock:
-            for player in room.players.values():
-                player.roll_into_cumulative()
-                player.reset_stats()
+        rm = self.get_room(code)
+        with rm.lock:
+            for p in rm.players.values():
+                p.roll_into_cumulative()
+                p.reset_stats()
 
-            room.game_number += 1
-            room.departed = {}
-            room.remaining = room.timer_total
-            room.running = False
-            room.running_since = None
-            room.pending_buzz = None
-            room.pending_speaker = None
-            room.awaiting_letter = None
-            room.status = STATUS_LOBBY
-            room.speaker_id = next(iter(room.players), None)
-            return room
+            rm.game_number += 1
+            rm.departed = {}
+            rm.remaining = rm.timer_total
+            rm.running = False
+            rm.running_since = None
+            rm.pending_buzz = rm.pending_speaker = rm.awaiting_letter = None
+            rm.status = STATUS_LOBBY
+            rm.speaker_id = next(iter(rm.players), None)
+            return rm
 
 game_manager = GameManager()
