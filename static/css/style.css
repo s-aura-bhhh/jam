@@ -1,18 +1,19 @@
+
+
 :root {
-  --color-bg: #111827;            /* Deep dark gray/blue for the page background */
-  --color-card-bg: #1f2937;       /* Slightly lighter for cards and modals */
-  --color-text: #f9fafb;          /* Crisp off-white text */
-  --color-text-muted: #9ca3af;    /* Soft gray for secondary text */
-  --color-border: #374151;        /* Subtle dark borders */
-  --color-primary: #3b82f6;       /* Bright, highly visible blue */
-  --color-primary-tint: rgba(59, 130, 246, 0.15); /* Transparent blue for active speakers */
-  --color-danger: #ef4444;        /* Punchy red for the buzzer and warnings */
-  --color-success: #22c55e;       /* Bright green for correct jams */
+  --bg: #223b70;
+  --box: #0b1933;
+  --text: #f9fafb;
+  --gray: #909db3;
+  --border: #3a414d;
+  --blue: #2e45ad;
+  --red: #ef4444;
+  --green: #22c55e;
 }
 
-/* Ensure [hidden] always wins — author display values (e.g. flex) would
-   otherwise override the browser's default [hidden]{display:none} rule. */
-[hidden] { display: none !important; }
+[hidden] {
+  display: none !important;
+}
 
 * {
   box-sizing: border-box;
@@ -20,18 +21,14 @@
 
 body {
   margin: 0;
-  background-color: var(--color-bg);
-  background-image: url("/static/bgi.jpg");
-  background-size: cover;
-  background-attachment: fixed;
-  background-position: center; /* Good to add this to keep the circles centered */
-  color: var(--color-text);
-  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--bg) url("/static/bgi.jpg") center/cover fixed;
+  color: var(--text);
+  font-family: sans-serif;
   font-size: 16px;
   line-height: 1.4;
 }
 
-.page {
+.container {
   min-height: 100vh;
   display: flex;
   flex-direction: column;
@@ -39,72 +36,60 @@ body {
   padding: 1.25rem;
 }
 
-.page-center {
+.center-wrap {
   justify-content: center;
 }
 
-.card {
-  background: var(--color-card-bg);
+.box {
+  background: var(--box);
   border-radius: 14px;
   padding: 1.5rem;
   width: 100%;
   max-width: 480px;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-.landing-card {
+.text-center {
   text-align: center;
 }
 
-h1, h2, h3 {
+h1,
+h2,
+h3 {
   margin: 0 0 0.75rem;
 }
 
 h2 {
   font-size: 1rem;
-  color: var(--color-text-muted);
+  color: var(--gray);
   text-transform: uppercase;
-  letter-spacing: 0.04em;
   margin-top: 1.5rem;
 }
 
-.title {
-  font-size: 1.5rem;
-}
-
-.subtitle {
-  color: var(--color-text-muted);
-  margin-bottom: 1.5rem;
-}
-
-/* ---------- forms ---------- */
-
-.stacked-form label {
+.form-col label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 600;
+  font-size: 0.9rem;
+  font-weight: bold;
   margin-bottom: 1rem;
 }
 
-.stacked-form input {
+.form-col input {
   display: block;
   width: 100%;
   margin-top: 0.35rem;
-  padding: 0.65rem 0.75rem;
-  border: 1px solid var(--color-border);
+  padding: 0.65rem;
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 1rem;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--bg);
+  color: var(--text);
 }
 
-.error-text {
-  color: var(--color-danger);
-  font-size: 0.875rem;
-  margin: 0.75rem 0 0;
+.err-msg {
+  color: var(--red);
+  font-size: 0.9rem;
+  margin-top: 0.75rem;
 }
-
-/* ---------- buttons ---------- */
 
 .btn {
   display: inline-flex;
@@ -113,72 +98,79 @@ h2 {
   gap: 0.4rem;
   border: none;
   border-radius: 8px;
-  background: var(--color-border);
-  color: var(--color-text);
+  background: var(--border);
+  color: var(--text);
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: bold;
   padding: 0.6rem 1rem;
   cursor: pointer;
   text-decoration: none;
 }
 
 .btn:disabled {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
 }
 
-.btn-primary {
-  background: var(--color-primary);
+.primary {
+  background: var(--blue);
   color: #fff;
 }
 
-.btn-secondary {
+.secondary {
   background: transparent;
-  color: var(--color-primary);
-  border: 1px solid var(--color-primary);
+  color: var(--blue);
+  border: 1px solid var(--blue);
 }
 
-.btn-danger {
-  background: var(--color-danger);
+.danger {
+  background: var(--red);
   color: #fff;
 }
 
-.btn-success {
-  background: var(--color-success);
+.success {
+  background: var(--green);
   color: #fff;
 }
 
-.btn-large {
+.huge {
   display: flex;
   width: 100%;
-  padding: 0.85rem 1rem;
+  padding: 0.85rem;
   font-size: 1.05rem;
 }
 
-.btn-small {
+.sm {
   padding: 0.4rem 0.75rem;
   font-size: 0.8rem;
 }
 
-.btn-round {
+.round {
   width: 2.75rem;
   height: 2.75rem;
   border-radius: 50%;
   padding: 0;
   font-size: 1.4rem;
-  line-height: 1;
 }
 
-.button-stack {
+.flex-col {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
   margin-top: 1.5rem;
 }
 
-/* ---------- room header / timer ---------- */
+.flex-btns {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
 
-.room-header {
+.flex-btns .btn {
+  flex: 1;
+}
+
+.top-bar {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -186,62 +178,57 @@ h2 {
   flex-wrap: wrap;
   padding-bottom: 1rem;
   margin-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border);
 }
 
-.room-code-block {
+.code-wrap {
   display: flex;
   flex-direction: column;
 }
 
-.label {
-  font-size: 0.7rem;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-}
-
-.room-code {
-  font-size: 1.4rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  font-variant-numeric: tabular-nums;
-}
-
-.timer {
+.clock {
   font-size: 2.25rem;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  font-weight: bold;
   text-align: center;
 }
 
-.room-header-actions {
+.top-btns {
   display: flex;
   gap: 0.5rem;
 }
 
-.status-line {
+.status {
   text-align: center;
-  color: var(--color-text-muted);
+  color: var(--gray);
   min-height: 1.3em;
   margin: 0.5rem 0 1rem;
 }
 
-.primary-actions {
+.main-actions {
   margin-bottom: 1rem;
 }
 
-.speaker-banner {
+.banner {
   text-align: center;
-  font-weight: 600;
-  color: var(--color-primary);
+  font-weight: bold;
+  color: var(--blue);
   min-height: 1.3em;
   margin-bottom: 0.75rem;
 }
 
-/* ---------- player list ---------- */
+.badge {
+  font-size: 0.65rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--blue);
+  border: 1px solid var(--blue);
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 5px;
+  align-self: flex-start;
+}
 
-.player-list {
+.players {
   list-style: none;
   margin: 0.75rem 0 0;
   padding: 0;
@@ -250,52 +237,51 @@ h2 {
   gap: 0.5rem;
 }
 
-.player-list li {
+.players li {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 0.5rem;
   padding: 0.75rem 1rem;
-  background: var(--color-bg);
+  background: var(--bg);
   border: 2px solid transparent;
   border-radius: 10px;
 }
 
-.player-list.clickable li {
+.players.clickable li {
   cursor: pointer;
 }
 
-.player-list li.is-speaker {
-  border-color: var(--color-primary);
-  background: var(--color-primary-tint);
+.players li.is-speaker {
+  border-color: var(--blue);
+  background: rgba(59, 130, 246, 0.15);
+}
+
+.players li.is-me {
+  font-style: italic;
 }
 
 .player-name {
-  font-weight: 600;
+  font-weight: bold;
   display: flex;
   align-items: center;
   gap: 0.5rem;
 }
 
-.speaker-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--color-primary);
-  letter-spacing: 0.04em;
-}
-
 .player-score {
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  font-weight: bold;
 }
 
-/* ---------- modals ---------- */
+.me-tag {
+  font-size: 0.65rem;
+  font-weight: bold;
+  text-transform: uppercase;
+  color: var(--gray);
+}
 
-.modal-overlay {
+.backdrop {
   position: fixed;
   inset: 0;
-  background: rgba(17, 24, 39, 0.55);
+  background: rgba(0, 0, 0, 0.6);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -305,7 +291,7 @@ h2 {
 
 .modal {
   position: relative;
-  background: var(--color-card-bg);
+  background: var(--box);
   border-radius: 14px;
   padding: 1.5rem;
   width: 100%;
@@ -314,19 +300,18 @@ h2 {
   overflow-y: auto;
 }
 
-.modal-close {
+.close-x {
   position: absolute;
-  top: 0.6rem;
+  top: 0.5rem;
   right: 0.75rem;
   background: none;
   border: none;
-  font-size: 1.6rem;
-  line-height: 1;
-  color: var(--color-text-muted);
+  font-size: 1.5rem;
+  color: var(--gray);
   cursor: pointer;
 }
 
-.score-row {
+.score-edit {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -334,59 +319,45 @@ h2 {
   margin: 1rem 0;
 }
 
-.score-display {
+.score-val {
   font-size: 1.75rem;
-  font-weight: 700;
+  font-weight: bold;
   min-width: 3rem;
   text-align: center;
-  font-variant-numeric: tabular-nums;
 }
 
-.decision-actions {
-  display: flex;
-  gap: 0.75rem;
-  margin-top: 1rem;
-}
-
-.decision-actions .btn {
-  flex: 1;
-}
-
-.letter-grid {
+.grid {
   display: grid;
-  grid-template-columns: repeat(2, 1fr); /* Changed from 4 columns to 2 */
+  grid-template-columns: 1fr 1fr;
   gap: 0.5rem;
   margin: 1rem 0;
 }
 
-.letter-grid button {
-  /* Removed aspect-ratio: 1 */
-  padding: 0.75rem 0.5rem; /* Added padding to make them standard rectangular buttons */
-  border: 1px solid var(--color-border);
+.grid button {
+  padding: 0.75rem 0.5rem;
+  border: 1px solid var(--border);
   border-radius: 8px;
-  background: var(--color-bg);
-  color: var(--color-text);
-  font-size: 0.95rem; /* Reduced font size slightly so long words fit */
-  font-weight: 700;
+  background: var(--bg);
+  color: var(--text);
+  font-size: 0.95rem;
+  font-weight: bold;
   cursor: pointer;
 }
 
-.letter-other-row {
+.other-row {
   display: flex;
   gap: 0.5rem;
 }
 
-.letter-other-row input {
+.other-row input {
   flex: 1;
-  padding: 0.6rem 0.75rem;
-  border: 1px solid var(--color-border);
+  padding: 0.6rem;
+  border: 1px solid var(--border);
   border-radius: 8px;
   font-size: 0.95rem;
-  background: var(--color-bg);
-  color: var(--color-text);
+  background: var(--bg);
+  color: var(--text);
 }
-
-/* ---------- buzzer ---------- */
 
 .buzz-btn {
   display: block;
@@ -394,11 +365,10 @@ h2 {
   min-height: 140px;
   border: none;
   border-radius: 18px;
-  background: var(--color-danger);
+  background: var(--red);
   color: #fff;
   font-size: 2rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
+  font-weight: bold;
   cursor: pointer;
   margin: 0.5rem 0 1rem;
 }
@@ -412,65 +382,52 @@ h2 {
   transform: scale(0.97);
 }
 
-/* ---------- results table ---------- */
-
-.results-table {
+.results {
   width: 100%;
   border-collapse: collapse;
   margin-bottom: 1.25rem;
 }
 
-.results-table th,
-.results-table td {
+.results th,
+.results td {
   padding: 0.5rem 0.25rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--border);
   text-align: left;
 }
 
-.results-table th {
+.results th {
   font-weight: 600;
-  color: var(--color-text-muted);
+  color: var(--gray);
 }
 
-.results-table td {
+.results td {
   text-align: right;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
+  font-weight: bold;
 }
 
-/* ---------- accessibility ---------- */
-
-:focus-visible {
-  outline: 2px solid var(--color-primary);
-  outline-offset: 2px;
+.mt-2 {
+  margin-top: 1.5rem;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  * {
-    transition: none !important;
-    animation: none !important;
-  }
+.sub-text {
+  color: var(--gray);
+  font-size: 0.85rem;
+  margin-top: -1rem;
+  margin-bottom: 1rem;
+}
+
+.red-title {
+  color: var(--red);
+  margin-top: 0;
 }
 
 @media (max-width: 360px) {
-  .timer {
+  .clock {
     font-size: 1.8rem;
   }
+
   .buzz-btn {
     font-size: 1.6rem;
     min-height: 120px;
   }
-}
-/* ---------- player self-highlight ---------- */
-
-.player-list li.is-me {
-  font-style: italic;
-}
-
-.me-tag {
-  font-size: 0.65rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  color: var(--color-text-muted);
-  letter-spacing: 0.04em;
 }
