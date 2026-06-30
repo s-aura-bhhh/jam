@@ -2,127 +2,117 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-  <title>Host - JAM Buzzer</title>
-
-  <meta name="theme-color" content="#1f2937">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Host | JAM</title>
   <link rel="manifest" href="/manifest.json">
-  <link rel="icon" href="/static/icons/icon-192.png">
-  <link rel="apple-touch-icon" href="/static/icons/icon-192.png">
   <link rel="stylesheet" href="/static/css/style.css">
 </head>
 <body>
 
-  <main class="page">
-    <section id="view-setup" class="card">
-      <h1 class="title">Host a JAM session</h1>
-      <form id="setup-form" class="stacked-form">
-        <label>Wrong jam points<input type="number" id="wrong-points" value="-1" step="any" required></label>
-        <label>Correct jam points<input type="number" id="correct-points" value="3" step="any" required></label>
-        <label>Timer (seconds)<input type="number" id="timer-seconds" value="60" min="1" step="any" required></label>
-        <button type="submit" class="btn btn-primary btn-large">Create room</button>
+  <main class="container">
+    <div id="view-setup" class="box">
+      <h1>Host a JAM session</h1>
+      <form id="setup-form" class="form-col">
+        <label>Wrong pts <input type="number" id="wrong-points" value="-1" step="any" required></label>
+        <label>Correct pts <input type="number" id="correct-points" value="3" step="any" required></label>
+        <label>Timer (sec) <input type="number" id="timer-seconds" value="60" min="1" step="any" required></label>
+        <button type="submit" class="btn primary huge">Create room</button>
       </form>
-      <p id="setup-error" class="error-text" hidden></p>
-    </section>
+      <p id="setup-error" class="err-msg" hidden></p>
+    </div>
 
-    <section id="view-room" class="card" hidden>
-      <header class="room-header">
-        <div class="room-code-block">
-          <span class="label">Room code</span>
-          <span id="room-code-display" class="room-code"></span>
-          <span id="game-number-host" class="speaker-tag" style="margin-top: 5px; align-self: flex-start; color: var(--color-primary); border: 1px solid var(--color-primary); padding: 2px 6px; border-radius: 4px;">Game 1</span>
+    <div id="view-room" class="box" hidden>
+      <header class="top-bar">
+        <div class="code-wrap">
+          <span>Room:</span>
+          <strong id="room-code-display"></strong>
+          <span id="game-number-host" class="badge">Game 1</span>
         </div>
-        <div id="timer-display" class="timer">--.--</div>
-        <div class="room-header-actions">
-          <button id="reset-timer-btn" class="btn btn-small">Reset timer</button>
-          <button id="disband-btn" class="btn btn-small btn-danger">Disband</button>
+        <div id="timer-display" class="clock">--.--</div>
+        <div class="top-btns">
+          <button id="reset-timer-btn" class="btn sm">Reset</button>
+          <button id="disband-btn" class="btn sm danger">Disband</button>
         </div>
       </header>
 
-      <p id="status-line" class="status-line"></p>
+      <p id="status-line" class="status"></p>
 
-      <div class="primary-actions">
-        <button id="start-btn" class="btn btn-primary btn-large" hidden>Start game</button>
-        <button id="resume-btn" class="btn btn-primary btn-large" hidden>Resume round</button>
-        <button id="restart-btn" class="btn btn-primary btn-large" hidden>Restart game</button>
+      <div class="main-actions">
+        <button id="start-btn" class="btn primary huge" hidden>Start game</button>
+        <button id="resume-btn" class="btn primary huge" hidden>Resume round</button>
+        <button id="restart-btn" class="btn primary huge" hidden>Restart game</button>
       </div>
 
       <h2>Players</h2>
-      <ul id="player-list" class="player-list"></ul>
-    </section>
+      <ul id="player-list" class="players"></ul>
+    </div>
   </main>
 
-  <div id="player-dialog" class="modal-overlay" hidden>
+  <div id="player-dialog" class="backdrop" hidden>
     <div class="modal">
-      <button id="player-dialog-close" class="modal-close" aria-label="Close">&times;</button>
+      <button id="player-dialog-close" class="close-x">&times;</button>
       <h3 id="player-dialog-name"></h3>
-      <div class="score-row">
-        <button id="player-score-minus" class="btn btn-round">-</button>
-        <span id="player-dialog-score" class="score-display">0</span>
-        <button id="player-score-plus" class="btn btn-round">+</button>
+      <div class="score-edit">
+        <button id="player-score-minus" class="btn round">-</button>
+        <span id="player-dialog-score" class="score-val">0</span>
+        <button id="player-score-plus" class="btn round">+</button>
       </div>
-      <button id="player-set-speaker" class="btn btn-large">Set as speaker</button>
+      <button id="player-set-speaker" class="btn huge">Make speaker</button>
     </div>
   </div>
 
-  <div id="decision-dialog" class="modal-overlay" hidden>
+  <div id="decision-dialog" class="backdrop" hidden>
     <div class="modal">
       <h3 id="decision-dialog-title"></h3>
-      <div class="decision-actions">
-        <button id="decision-wrong-btn" class="btn btn-danger btn-large">Wrong jam</button>
-        <button id="decision-correct-btn" class="btn btn-success btn-large">Correct jam</button>
+      <div class="flex-btns">
+        <button id="decision-wrong-btn" class="btn danger huge">Wrong jam</button>
+        <button id="decision-correct-btn" class="btn success huge">Correct jam</button>
       </div>
     </div>
   </div>
 
-  <div id="letter-dialog" class="modal-overlay" hidden>
+  <div id="letter-dialog" class="backdrop" hidden>
     <div class="modal">
-      <h3>Reason for the jam?</h3>
-      <div id="letter-grid" class="letter-grid"></div>
-      <div id="letter-other-row" class="letter-other-row" hidden>
-        <input type="text" id="letter-other-input" placeholder="Type the reason...">
+      <h3>Reason?</h3>
+      <div id="letter-grid" class="grid"></div>
+      <div id="letter-other-row" class="other-row" hidden>
+        <input type="text" id="letter-other-input" placeholder="Type reason...">
         <button id="letter-other-submit" class="btn">Submit</button>
       </div>
     </div>
   </div>
 
-  <div id="ended-dialog" class="modal-overlay" hidden>
+  <div id="ended-dialog" class="backdrop" hidden>
     <div class="modal">
       <h3 id="ended-winner-text"></h3>
-      <button id="ended-close-btn" class="btn btn-large">Close</button>
+      <button id="ended-close-btn" class="btn huge">Close</button>
     </div>
   </div>
 
-  <div id="host-disbanded-dialog" class="modal-overlay" hidden>
+  <div id="host-disbanded-dialog" class="backdrop" hidden>
     <div class="modal">
-      <h3 style="color: var(--color-danger); margin-top:0;">Session Disbanded</h3>
-      <p style="font-size: 0.9rem; margin-bottom: 1rem;">
-        Total Games Played: <strong id="host-total-games">0</strong>
-      </p>
+      <h3 class="red-title">Session Disbanded</h3>
+      <p>Total Games: <strong id="host-total-games">0</strong></p>
 
-      <table class="results-table">
+      <table class="results">
         <thead>
           <tr>
-            <th style="text-align: left;">Player</th>
-            <th style="text-align: center;">Wins</th>
-            <th style="text-align: right;">Total Score</th>
+            <th align="left">Player</th>
+            <th>Wins</th>
+            <th align="right">Score</th>
           </tr>
         </thead>
         <tbody id="host-overall-tbody">
         </tbody>
       </table>
 
-      <a href="/" class="btn btn-large btn-primary" style="margin-top: 1.5rem;">Back to home</a>
+      <a href="/" class="btn primary huge mt-2">Back to home</a>
     </div>
   </div>
 
   <script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
   <script>
-    if ("serviceWorker" in navigator) {
-      window.addEventListener("load", () => {
-        navigator.serviceWorker.register("/service-worker.js");
-      });
-    }
+    if ('serviceWorker' in navigator) navigator.serviceWorker.register('/service-worker.js');
   </script>
   <script src="/static/js/host.js"></script>
 </body>
