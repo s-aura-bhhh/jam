@@ -1,24 +1,20 @@
 {
   "name": "JAM Buzzer",
   "short_name": "JAM",
-  "description": "Run a Just A Minute session with a live buzzer.",
-  "start_url": "/",
   "display": "standalone",
-  "background_color": "#f4f4f5",
-  "theme_color": "#1f2937",
-  "orientation": "portrait",
+  "start_url": "/",
+  "background_color": "#111827",
+  "theme_color": "#111827",
   "icons": [
     {
       "src": "/static/icons/icon-192.png",
       "sizes": "192x192",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     },
     {
       "src": "/static/icons/icon-512.png",
       "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "any maskable"
+      "type": "image/png"
     }
   ]
 }
