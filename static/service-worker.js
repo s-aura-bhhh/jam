@@ -1,9 +1,5 @@
-// service-worker.js
-// Uses a Network-First strategy so you never get stuck with old code.
-
-const CACHE_NAME = "jam-buzzer-v4";
-
-const SHELL = [
+const CACHE = "jam-v4";
+const ASSETS = [
   "/",
   "/host",
   "/play",
@@ -12,51 +8,37 @@ const SHELL = [
   "/static/js/player.js",
   "/static/icons/icon-192.png",
   "/static/icons/icon-512.png",
-  "/manifest.json",
+  "/static/sounds/buzz.mp3",
+  "/manifest.json"
 ];
 
-// ---- install: cache the shell ----
-self.addEventListener("install", (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => cache.addAll(SHELL))
-  );
+self.addEventListener("install", e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(ASSETS)));
   self.skipWaiting();
 });
 
-// ---- activate: clean up old caches ----
-self.addEventListener("activate", (event) => {
-  event.waitUntil(
-    caches.keys().then((keys) =>
-      Promise.all(
-        keys.filter((k) => k !== CACHE_NAME).map((k) => caches.delete(k))
-      )
-    )
+self.addEventListener("activate", e => {
+  e.waitUntil(
+    caches.keys().then(keys => Promise.all(
+      keys.filter(k => k !== CACHE).map(k => caches.delete(k))
+    ))
   );
   self.clients.claim();
 });
 
-// ---- fetch: NETWORK-FIRST STRATEGY ----
-self.addEventListener("fetch", (event) => {
-  const url = new URL(event.request.url);
+self.addEventListener("fetch", e => {
+  const url = new URL(e.request.url);
+  
+  // bypass sw for sockets
+  if (url.pathname.startsWith("/socket.io") || url.hostname !== self.location.hostname) return;
 
-  // Always bypass Service Worker for Socket.IO
-  if (url.pathname.startsWith("/socket.io") || url.hostname !== self.location.hostname) {
-    return;
-  }
-
-  // Network-First, fallback to Cache
-  event.respondWith(
-    fetch(event.request)
-      .then((networkResponse) => {
-        // If we get a good response, save a copy to the cache for later
-        return caches.open(CACHE_NAME).then((cache) => {
-          cache.put(event.request, networkResponse.clone());
-          return networkResponse;
-        });
+  e.respondWith(
+    fetch(e.request)
+      .then(res => {
+        const clone = res.clone();
+        caches.open(CACHE).then(c => c.put(e.request, clone));
+        return res;
       })
-      .catch(() => {
-        // If the network fails (offline), load from the cache
-        return caches.match(event.request);
-      })
+      .catch(() => caches.match(e.request))
   );
 });
