@@ -362,7 +362,7 @@ h2 {
 .buzz-btn {
   display: block;
   width: 100%;
-  min-height: 300px;
+  min-height: 500px;
   border: none;
   border-radius: 18px;
   background: var(--red);
@@ -428,6 +428,6 @@ h2 {
 
   .buzz-btn {
     font-size: 1.6rem;
-    min-height: 300px;
+    min-height: 500px;
   }
 }
